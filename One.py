@@ -1,6 +1,6 @@
 def main():
     j = 0
-    with open("nums.txt") as f:
+    with open("One.txt") as f:
         numbers = f.read()
         nums = numbers.split("\n\n")
         totals = []
