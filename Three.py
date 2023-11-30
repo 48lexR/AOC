@@ -11,7 +11,7 @@ def main():
     total = []
     total2 = []
 
-    with open("Three.txt") as f:
+    with open("./inputs/Three.txt") as f:
         puzzle = f.read().split("\n")  # split based on rucksack
         # for rucksack in puzzle:
         #     t = 0

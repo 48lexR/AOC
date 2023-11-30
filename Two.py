@@ -11,7 +11,7 @@ def main():
         "C Z": 7
     }
     total = []
-    with open("Two.txt") as f:
+    with open("./inputs/Two.txt") as f:
         text = f.read()
         text = text.split("\n")
         for line in text:

@@ -16,7 +16,7 @@ def main():
     chunkSize = 14
     iterator = chunkSize
 
-    with open("Six.txt") as f:
+    with open("./inputs/Six.txt") as f:
         content = f.read()
 
     for i in range(len(content)):

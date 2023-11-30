@@ -1,67 +1,89 @@
 import math
-
-points = []
-constellation = []
+import re
 
 
-def calculateDistance(arr1, arr2):
-    """
-        BOTH ARRAYS MUST HAVE FOUR ELEMENTS
-    """
-    getX = (arr1[0] - arr2[0])**2
-    getY = (arr1[1] - arr2[1])**2
-    getZ = (arr1[2] - arr2[2])**2
-    getV = (arr1[3] - arr2[3])**2
-    return math.sqrt(getX + getY + getZ + getV)
+def ints(s: str):
+    return list(map(int, re.findall(r"-?\d+", s)))  # thanks mserrano!
 
 
-def merge(x, y, inCommon):
-    del constellation[x][inCommon]
-    constellation[x] += constellation[y]
-    del constellation[y]
-    return constellation[x]
+def psub(x, y):
+    if len(x) == 2:
+        return [x[0] - y[0], x[1] - y[1]]
+    return [a-b for a, b in zip(x, y)]
 
 
-def compare(x, y):
-    """
-        X AND Y MUST BE INTEGERS REPRESENTING INDECES OF CONSTELLATIONS
-    """
-    for z in range(len(constellation[x])):
-        for a in range(len(constellation[y])):
-            print(a, constellation[y][a])
-            if constellation[x][z] == constellation[y][a]:
-                print("Merge")
-                merge(x, y, z)
-                return
+def pdist1(x, y=None):
+    if y is not None:
+        x = psub(x, y)
+    if len(x) == 2:
+        return abs(x[0]) + abs(x[1])
+    return sum(map(abs, x))
+
+
+class UnionFind:
+    # n: int 
+    # parents: List[Optional[int]]
+    # ranks: List[int]
+    # num_sets: int
+
+    def __init__(self, n: int) -> None:
+        self.n = n
+        self.parents = [None] * n
+        self.ranks = [1] * n
+        self.num_sets = n
+
+    def find(self, i: int) -> int:
+        p = self.parents[i]
+        if p is None:
+            return i
+        p = self.find(p)
+        self.parents[i] = p
+        return p
+
+    def in_same_set(self, i: int, j: int) -> bool:
+        return self.find(i) == self.find(j)
+
+    def merge(self, i: int, j: int) -> None:
+        i = self.find(i)
+        j = self.find(j)
+
+        if i == j:
+            return
+
+        i_rank = self.ranks[i]
+        j_rank = self.ranks[j]
+
+        if i_rank < j_rank:
+            self.parents[i] = j
+        elif i_rank > j_rank:
+            self.parents[j] = i
+        else:
+            self.parents[j] = i
+            self.ranks[i] += 1
+        self.num_sets -= 1
 
 
 def main():
 
-    with open("challenge.txt") as f:
-        content = f.read().split("\n")
+    # Here begins the actual code for today:
+    with open("./inputs/challenge.txt") as f:
         print("Parsing Data: ")
+        inp = f.read()
 
-        for line in content:
-            points.append([int(i) for i in line.split(",")])
+    lines = inp.splitlines()
 
-    print("Done! Making initial constellations...")
-    # go through the first element in the array--find all points that are less than 3 away
-    for i in range(len(points)):
-        constellation.append([])
-        for j in range(i+1, len(points) - 1):
-            if(calculateDistance(points[i], points[j]) <= 3):
-                constellation[i].append(points[j])
+    to_i = dict()
 
-    print("Done! Finding Duplicates...")
-    # compare all the list and find duplicate points
-    for i in range(1, len(constellation)):
-        for j in range(0, i-1):
-            compare(i, j)
-            for i in range(len(constellation)):
-                if i == []:
-                    del constellation[i]
-            break
-        print(constellation[i])
+    uf = UnionFind(len(lines))
+
+    for i, line in enumerate(lines):
+        p = tuple(ints(line))
+        to_i[p] = i
+        
+        for point in to_i:
+            if pdist1(p, point) <= 3:
+                uf.merge(i, to_i[point])
+    print(uf.num_sets)
 
 if __name__ == "__main__":
     main()

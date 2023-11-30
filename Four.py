@@ -5,7 +5,7 @@ def main():
     total = []
     ans1 = 0
     ans2 = 0
-    with open("Four.txt") as f:
+    with open("./inputs/Four.txt") as f:
         content = f.read().split("\n")
         pairs = [pair.split(",") for pair in content]
         for numbers in pairs:

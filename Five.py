@@ -37,7 +37,7 @@ def move2(amount, of, to):
 
 
 def main():
-    with open("Five.txt") as f:
+    with open("./inputs/Five.txt") as f:
         content = f.read().split("\n")
         for message in content:
             message = message.split(" ")
